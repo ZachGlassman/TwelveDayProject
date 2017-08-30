@@ -51,7 +51,8 @@ class QuandleRequest(object):
 def stock_input():
     qr = QuandleRequest(request.form['stock-ticker'])
     df = qr.get()
-    p = figure(x_axis_type='datetime')
+    p = figure(x_axis_type='datetime',
+               tools=['pan', 'save', 'undo'])
     rel_vars = ['adj_close', 'adj_high', 'adj_low', 'open',
                 'adj_open', 'close']
     colors = Category10[len(rel_vars)]
