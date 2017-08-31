@@ -7,7 +7,7 @@ from bokeh.embed import components
 from bokeh.palettes import Category10
 
 app = Flask(__name__)
-API_KEY = os.environ.get('Quandl_API_KEY', '4YU33LfF8JAjDEzKThkY')
+API_KEY = os.environ.get('Quandl_API_KEY')
 
 
 class QuandleRequest(object):
