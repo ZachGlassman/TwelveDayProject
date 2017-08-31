@@ -51,11 +51,15 @@ class QuandleRequest(object):
 def stock_input():
     qr = QuandleRequest(request.form['stock-ticker'])
     df = qr.get()
+    pos_vars = list(df.columns)
     p = figure(x_axis_type='datetime',
-               tools=['pan', 'save', 'undo'])
-    rel_vars = ['adj_close', 'adj_high', 'adj_low', 'open',
-                'adj_open', 'close']
-    colors = Category10[len(rel_vars)]
+               tools="pan,wheel_zoom,box_zoom,reset,save")
+    rel_vars = [i for i in request.form.keys() if i in pos_vars]
+    print(rel_vars, pos_vars)
+    if len(rel_vars) > 2:
+        colors = Category10[len(rel_vars)]
+    else:
+        colors = ['red', 'blue']
     tick = qr.tick()
     for i, var in enumerate(rel_vars):
         p.line(df['date'].values,
@@ -63,6 +67,7 @@ def stock_input():
                line_width=2,
                line_color=colors[i],
                legend="{}: {}".format(tick, var))
+    p.xaxis.axis_label = 'Date'
     script, div = components(p)
     return render_template('plots.html', script=script, plot_div=div)
 

@@ -19,8 +19,33 @@
           <form action="." method="post">
             <div class="form-group">
               <label for="stock-ticker">Stock Ticker</label>
-              <input name="stock-ticker" type="text" id="stock-ticker" class="form-control" placeholder="enter stock ticker">
+              <input name="stock-ticker" type="text" id="stock-ticker" class="form-control" placeholder="enter stock ticker" required>
             </div>
+            <div class="form-check">
+                <label class="form-check-label">
+                  <input name='close' class="form-check-input" type="checkbox" value="">
+                 Closing price
+                </label>
+              </div>
+              <div class="form-check">
+                  <label class="form-check-label">
+                    <input name='adj-clos' class="form-check-input" type="checkbox" value="">
+                    Adjusted closing price
+                  </label>
+                </div>
+                <div class="form-check">
+                    <label class="form-check-label">
+                      <input name='open' class="form-check-input" type="checkbox" value="">
+                      Opening price
+                    </label>
+                  </div>
+                  <div class="form-check">
+                      <label class="form-check-label">
+                        <input name='adj-open' class="form-check-input" type="checkbox" value="">
+                        Adjusted opening price
+                      </label>
+                    </div>
+            
             <button type="submit" class="btn btn-primary">Submit</button>
             
           </form>
