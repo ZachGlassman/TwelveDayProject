@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect
+from flask import Flask, render_template, request, redirect, jsonify
 import requests
 import os
 import pandas as pd
@@ -7,7 +7,7 @@ from bokeh.embed import components
 from bokeh.palettes import Category10
 
 app = Flask(__name__)
-API_KEY = os.environ.get('Quandl_API_KEY')
+API_KEY = os.environ.get('Quandl_API_KEY', '4YU33LfF8JAjDEzKThkY')
 
 
 class QuandleRequest(object):
@@ -47,15 +47,14 @@ class QuandleRequest(object):
         return self._response_to_df()
 
 
-@app.route('/', methods=['POST'])
+@app.route('/_stock_data', methods=['GET'])
 def stock_input():
-    qr = QuandleRequest(request.form['stock-ticker'])
+    qr = QuandleRequest(request.args['stock-ticker'])
     df = qr.get()
     pos_vars = list(df.columns)
     p = figure(x_axis_type='datetime',
                tools="pan,wheel_zoom,box_zoom,reset,save")
-    rel_vars = [i for i in request.form.keys() if i in pos_vars]
-    print(rel_vars, pos_vars)
+    rel_vars = [i for i in request.args.keys() if i in pos_vars]
     if len(rel_vars) > 2:
         colors = Category10[len(rel_vars)]
     else:
@@ -69,7 +68,7 @@ def stock_input():
                legend="{}: {}".format(tick, var))
     p.xaxis.axis_label = 'Date'
     script, div = components(p)
-    return render_template('plots.html', script=script, plot_div=div)
+    return jsonify(script=script, plot_div=div)
 
 
 @app.route('/')
