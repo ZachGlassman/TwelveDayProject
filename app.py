@@ -9,7 +9,19 @@ from bokeh.layouts import gridplot
 import datetime
 
 app = Flask(__name__)
+# some global variables for applications
 API_KEY = os.environ.get('Quandl_API_KEY')
+if API_KEY is None:
+    # we are local development, kluge for now
+    with open(os.path.dirname(__file__) + '/../api_key.txt', 'r') as fp:
+        API_KEY = fp.readlines()[0]
+
+
+PLOT_OPTIONS = {
+    'tools': "pan,wheel_zoom,box_zoom,reset,save",
+    'height': 250,
+    'width': 250
+}
 
 
 class QuandleRequest(object):
@@ -54,7 +66,7 @@ class QuandleRequest(object):
 
 def _plot_one(df, rel_vars, tick):
     p = figure(x_axis_type='datetime',
-               tools="pan,wheel_zoom,box_zoom,reset,save")
+               tools=PLOT_OPTIONS['tools'])
     if len(rel_vars) > 2:
         colors = Category10[len(rel_vars)]
     else:
@@ -79,8 +91,13 @@ def _plot_two(df, rel_vars, tick):
     else:
         colors = ['red', 'blue']
     for i, var in enumerate(rel_vars):
-        p = figure(x_axis_type='datetime',
-                   tools="pan,wheel_zoom,box_zoom,reset,save")
+        if i > 0:
+            p = figure(x_axis_type='datetime',
+                       x_range=figures[0].x_range,
+                       tools=PLOT_OPTIONS['tools'])
+        else:
+            p = figure(x_axis_type='datetime',
+                       tools=PLOT_OPTIONS['tools'])
         # now loop through each tick
         for j, tick in enumerate(ticks):
             _df = df[df['ticker'] == tick]
@@ -91,7 +108,10 @@ def _plot_two(df, rel_vars, tick):
                    legend="{}".format(tick))
         figures.append(p)
 
-    script, div = components(gridplot(*tuple(figures), ncols=3))
+    script, div = components(gridplot(*tuple(figures),
+                                      ncols=3,
+                                      plot_width=PLOT_OPTIONS['height'],
+                                      plot_height=PLOT_OPTIONS['width']))
     return jsonify(script=script, plot_div=div)
 
 
