@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, redirect, jsonify
+from flask import Flask, render_template, request, redirect, jsonify, url_for
 import requests
 import os
 import pandas as pd
@@ -22,6 +22,9 @@ PLOT_OPTIONS = {
     'height': 250,
     'width': 250
 }
+
+# TODO
+# add metadata call and then only fetch relevent data
 
 
 class QuandleRequest(object):
@@ -133,18 +136,30 @@ def stock_input():
         return jsonify({})
 
 
+def get_tick_names():
+    root = os.path.dirname(os.path.abspath(__file__))
+    static = os.path.join(root, 'static')
+    filename = os.path.join(static, 'tick_names.txt')
+    with open(filename, 'r') as fp:
+        names = fp.readlines()[0].split(',')
+    return names
+
+
 @app.route('/')
 def index():
+    # make metadata class to get all the options
+    # TODO
     check_items = [
         {"id": 'close', 'name': "Closing price"},
         {"id": 'adj_close', 'name': "Adjusted closing price"},
         {"id": 'open', 'name': 'Opening price'},
         {"id": 'adj_open', 'name': 'Ajusted opening price'}]
-
     year_list = list(range(2014, datetime.datetime.now().year + 1))
+    tick_names = get_tick_names()
     return render_template('index.html',
                            check_items=check_items,
-                           year_list=year_list)
+                           year_list=year_list,
+                           tick_names=tick_names)
 
 
 if __name__ == '__main__':
