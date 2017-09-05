@@ -13,6 +13,7 @@
   <!-- Bootstrap core CSS -->
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta/css/bootstrap.min.css" integrity="sha384-/Y6pD6FV/Vv2HJnA6t+vslU6fwYXjCFtcEpHbNJ0lyAFsXTsjBbfaDjzALeQsN6M"
     crossorigin="anonymous">
+  <link rel="stylesheet" href="{{ url_for('static', filename='custom.css')}}">
   <link href="https://cdn.pydata.org/bokeh/release/bokeh-0.12.7.min.css" rel="stylesheet" type="text/css">
   <link href="https://cdn.pydata.org/bokeh/release/bokeh-widgets-0.12.7.min.css" rel="stylesheet" type="text/css">
   <script src="https://code.jquery.com/jquery-3.2.1.min.js" integrity="sha256-hwg4gsxgFZhOsEEamdOYGBf13FyQuiTwlAQgxVSNgt4="
@@ -23,7 +24,7 @@
 </head>
 
 <body>
-  <nav class="navbar navbar-light bg-light">
+  <nav class="navbar navbar-dark">
     <a class="navbar-brand" href="#">
           Ticker Lookup App <small>Zachary Glassman - Data Incubator</small>
         </a>
@@ -31,61 +32,64 @@
   <div class="container">
     <div class="row">
       <div class="col-lg-4 text-left">
-        <form id="main-form">
-          <div class="form-group">
-            <label for="stock-ticker">Stock Ticker <small>multiple stocks separated by commas</small></label>
-            <input name="stock-ticker" type="text" id="stock-ticker" class="form-control" placeholder="enter stock ticker">
-          </div>
-          {% for item in check_items %}
-          <div class="form-check">
-            <label class="form-check-label">
+        <div class="jumbotron">
+          <form id="main-form">
+            <div class="form-group">
+              <label for="stock-ticker">Stock Ticker <small>multiple stocks separated by commas</small></label>
+              <input name="stock-ticker" type="text" id="stock-ticker" class="form-control" placeholder="enter stock ticker">
+            </div>
+            {% for item in check_items %}
+            <div class="form-check">
+              <label class="form-check-label">
                   <input id="{{ item.id }}" name="{{ item.id }}" class="form-check-input" type="checkbox" value="">
                  {{ item.name }}
                 </label>
-          </div>
-          {% endfor %}
-          <!-- date selector -->
-          <div class="row">
+            </div>
+            {% endfor %}
+            <!-- date selector -->
+            <div class="row">
 
-            {% for t_name in ['start', 'end'] %}
-            <div class="col">
-              <div class="form-group">
-                <label for="{{t_name}}-date-day">{{t_name|title}} Day</label>
-                <select class="form-control" id="{{t_name}}-date-day">
+              {% for t_name in ['start', 'end'] %}
+              <div class="col">
+                <div class="form-group">
+                  <label for="{{t_name}}-date-day">{{t_name|title}} Day</label>
+                  <select class="form-control" id="{{t_name}}-date-day">
                   {% for n in range(1, 32) %}
                     <option>{{ n }}</n>
                   {% endfor %}
                 </select>
+                </div>
               </div>
-            </div>
-            <div class="col">
-              <div class="form-group">
-                <label for="{{t_name}}-date-month">{{t_name|title}} Month</label>
-                <select class="form-control" id="{{t_name}}-date-month">
+              <div class="col">
+                <div class="form-group">
+                  <label for="{{t_name}}-date-month">{{t_name|title}} Month</label>
+                  <select class="form-control" id="{{t_name}}-date-month">
                     {% for n in range(1, 13) %}
                       <option>{{ n }}</n>
                     {% endfor %}
                   </select>
+                </div>
               </div>
-            </div>
-            <div class="col">
-              <div class="form-group">
-                <label for="start-date-year">{{t_name|title}} Year</label>
-                <select class="form-control" id="{{t_name}}-date-year">
+              <div class="col">
+                <div class="form-group">
+                  <label for="start-date-year">{{t_name|title}} Year</label>
+                  <select class="form-control" id="{{t_name}}-date-year">
                       {% for n in year_list %}
                         <option>{{ n }}</n>
                       {% endfor %}
                     </select>
+                </div>
               </div>
+              {% endfor %}
             </div>
-            {% endfor %}
-          </div>
 
-          <button id="main-submit" class="btn btn-primary">Submit</button>
-        </form>
-      </div>
-      <div class="col-lg-8 text-left">
-        <div id="plot">
+            <button id="main-submit" class="btn btn-primary">Submit</button>
+          </form>
+          <div class="col-lg-8 text-left">
+            <div id="plot">
+
+            </div>
+          </div>
 
         </div>
       </div>

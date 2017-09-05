@@ -7,6 +7,7 @@ from bokeh.embed import components
 from bokeh.palettes import Category10, Category20
 from bokeh.layouts import gridplot
 import datetime
+from Transform import AccessTransform
 
 app = Flask(__name__)
 # some global variables for applications
@@ -147,13 +148,13 @@ def get_tick_names():
 
 @app.route('/')
 def index():
-    # make metadata class to get all the options
-    # TODO
-    check_items = [
-        {"id": 'close', 'name': "Closing price"},
-        {"id": 'adj_close', 'name': "Adjusted closing price"},
-        {"id": 'open', 'name': 'Opening price'},
-        {"id": 'adj_open', 'name': 'Ajusted opening price'}]
+    check_items = [AccessTransform("Closing price", "close", "date", "close"),
+                   AccessTransform("Adjusted closing price",
+                                   "adj_close", "date", "adj_close"),
+                   AccessTransform("Opening price", "open", "date", "open"),
+                   AccessTransform("Ajusted opening price",
+                                   "adj_open", "date", "adj_open")
+                   ]
     year_list = list(range(2014, datetime.datetime.now().year + 1))
     tick_names = get_tick_names()
     return render_template('index.html',
