@@ -78,7 +78,7 @@ class QuandleRequest(object):
         return self._response_to_df()
 
 
-def _plot_one(df, rel_vars, tick, normalize):
+def _plot_one(df, rel_vars, tick, *args):
     p = figure(x_axis_type='datetime',
                tools=PLOT_OPTIONS['tools'])
     if len(rel_vars) > 2:
@@ -86,7 +86,7 @@ def _plot_one(df, rel_vars, tick, normalize):
     else:
         colors = ['red', 'blue']
     for i, var in enumerate(rel_vars):
-        x, y = CHECK_ITEMS_DICT[var](df, normalize)
+        x, y = CHECK_ITEMS_DICT[var](df, *args)
         p.line(x, y,
                line_width=2,
                line_color=colors[i],
@@ -96,7 +96,7 @@ def _plot_one(df, rel_vars, tick, normalize):
     return jsonify(script=script, plot_div=div)
 
 
-def _plot_two(df, rel_vars, tick, normalize):
+def _plot_two(df, rel_vars, tick, *args):
     """create a figure for each relevent variable"""
     figures = []
     ticks = list(sorted(df['ticker'].unique()))
@@ -115,7 +115,7 @@ def _plot_two(df, rel_vars, tick, normalize):
         # now loop through each tick
         for j, tick in enumerate(ticks):
             _df = df[df['ticker'] == tick]
-            x, y = CHECK_ITEMS_DICT[var](_df, normalize)
+            x, y = CHECK_ITEMS_DICT[var](_df, *args)
             p.line(x, y,
                    line_width=2,
                    line_color=colors[j],
@@ -157,6 +157,12 @@ def stock_input():
         normalize = True
     else:
         normalize = False
+
+    smooth = request.args.get('smooth', None)
+    if smooth is not None:
+        smooth = True
+    else:
+        smooth = False
     if tick == '':
         return jsonify({})
     qr = QuandleRequest(tick)
@@ -169,9 +175,9 @@ def stock_input():
     rel_vars = [i for i in request.args.keys() if i in CHECK_ITEMS_DICT.keys()]
     tick = qr.get_tick()
     if num_ticks == 1:
-        return _plot_one(df, rel_vars, tick, normalize)
+        return _plot_one(df, rel_vars, tick, normalize, smooth)
     elif num_ticks > 1:
-        return _plot_two(df, rel_vars, tick, normalize)
+        return _plot_two(df, rel_vars, tick, normalize, smooth)
     else:
         return jsonify({})
 
