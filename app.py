@@ -7,7 +7,7 @@ from bokeh.embed import components
 from bokeh.palettes import Category10, Category20
 from bokeh.layouts import gridplot
 import datetime
-from Transform import AccessTransform
+from Transform import AccessTransform, DifferenceTransform
 
 app = Flask(__name__)
 # some global variables for applications
@@ -29,7 +29,9 @@ CHECK_ITEMS = [AccessTransform("Closing price", "close", "date", "close"),
                                "adj_close", "date", "adj_close"),
                AccessTransform("Opening price", "open", "date", "open"),
                AccessTransform("Ajusted opening price",
-                               "adj_open", "date", "adj_open")
+                               "adj_open", "date", "adj_open"),
+               DifferenceTransform("Price Change", 'p_diff',
+                                   'date', ['open', 'close'])
                ]
 CHECK_ITEMS_DICT = {i.id: i for i in CHECK_ITEMS}
 
@@ -139,6 +141,14 @@ def format_date(date):
     return '{}{}{}'.format(year, month, day)
 
 
+def get_query_keys_vars(keys):
+    rel_vars = []
+    for key in keys:
+        if key in CHECK_ITEMS_DICT.keys():
+            rel_vars += CHECK_ITEMS_DICT[key].variables
+    return list(set(rel_vars))
+
+
 @app.route('/_stock_data', methods=['GET'])
 def stock_input():
     tick, start_date, end_date = parse_ticker(request)
@@ -156,7 +166,7 @@ def stock_input():
         qr.end_date(format_date(end_date))
     df = qr.get()
     num_ticks = len(df['ticker'].unique())
-    rel_vars = [i for i in request.args.keys() if i in list(df.columns)]
+    rel_vars = [i for i in request.args.keys() if i in CHECK_ITEMS_DICT.keys()]
     tick = qr.get_tick()
     if num_ticks == 1:
         return _plot_one(df, rel_vars, tick, normalize)

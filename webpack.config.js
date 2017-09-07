@@ -2,7 +2,9 @@ const path = require('path');
 const webpack = require('webpack');
 
 module.exports = {
-    entry: './index.js',
+    entry: {
+        main: './index.js'
+    },
     output: {
         path: path.resolve('static'),
         filename: 'index_bundle.js'
@@ -23,4 +25,4 @@ module.exports = {
             }
         ]
     }
-}
+};
