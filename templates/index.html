@@ -44,39 +44,14 @@
             {% endfor %}
             <!-- date selector -->
             <div class="row">
-
-              {% for t_name in ['start', 'end'] %}
-              <div class="col">
-                <div class="form-group">
-                  <label for="{{t_name}}-date-day">{{t_name|title}} Day</label>
-                  <select class="form-control" id="{{t_name}}-date-day">
-                  {% for n in range(1, 32) %}
-                    <option>{{ n }}</n>
-                  {% endfor %}
-                </select>
-                </div>
+              <p>Enter dates (maximum range if no entry)</p>
+              <div class="form-inline">
+              <label for="start-date">Start Date</label>
+            <input type="text" name="start-date" id="start-date">
+              
+            <label for="end-date" class="form-label">End Date</label>
+            <input type="text" name="end-date" id="end-date">
               </div>
-              <div class="col">
-                <div class="form-group">
-                  <label for="{{t_name}}-date-month">{{t_name|title}} Month</label>
-                  <select class="form-control" id="{{t_name}}-date-month">
-                    {% for n in range(1, 13) %}
-                      <option>{{ n }}</n>
-                    {% endfor %}
-                  </select>
-                </div>
-              </div>
-              <div class="col">
-                <div class="form-group">
-                  <label for="start-date-year">{{t_name|title}} Year</label>
-                  <select class="form-control" id="{{t_name}}-date-year">
-                      {% for n in year_list %}
-                        <option>{{ n }}</n>
-                      {% endfor %}
-                    </select>
-                </div>
-              </div>
-              {% endfor %}
             </div>
 
             <button id="main-submit" class="btn btn-primary">Submit</button>
@@ -97,6 +72,8 @@
     $TICK_NAMES = {{ tick_names|safe }};
       //autocomplete from jquery ui automation
       $(document).ready(function() {
+        $("#start-date").datepicker();
+        $("#end-date").datepicker();
         $("#main-submit").on('click', function(e){
             e.preventDefault();
             console.log($("#main-form").serialize());

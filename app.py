@@ -34,7 +34,6 @@ class QuandleRequest(object):
         self._params = {}
         self.ticker(ticker_)
         self._params['api_key'] = str(API_KEY)
-        self.start_date('2017-01-01')
 
     def get_tick(self):
         return self._params['ticker']
@@ -121,15 +120,26 @@ def _plot_two(df, rel_vars, tick):
 
 def parse_ticker(request):
     """parse the return ticker stock-tick-num"""
-    return request.args['ticker-select']
+    start_date = request.args.get('start-date', None)
+    end_date = request.args.get('end-date', None)
+    return request.args['ticker-select'], start_date, end_date
+
+
+def format_date(date):
+    month, day, year = date.split('/')
+    return '{}{}{}'.format(year, month, day)
 
 
 @app.route('/_stock_data', methods=['GET'])
 def stock_input():
-    tick = parse_ticker(request)
+    tick, start_date, end_date = parse_ticker(request)
     if tick == '':
         return jsonify({})
     qr = QuandleRequest(tick)
+    if start_date is not None:
+        qr.start_date(format_date(start_date))
+    if end_date is not None:
+        qr.end_date(format_date(end_date))
     df = qr.get()
     num_ticks = len(df['ticker'].unique())
     rel_vars = [i for i in request.args.keys() if i in list(df.columns)]
