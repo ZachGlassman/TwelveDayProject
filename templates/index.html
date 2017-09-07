@@ -75,15 +75,12 @@
           </div>
           <div class="row">
             <div class="form-inline">
-              <button id="main-submit" class="btn btn-primary">Submit</button>
+              <button id="main-submit" class="btn btn-primary">Submit</button> {% for item in mod_names %}
               <div class="pretty smooth">
-                <input id="normalize" name="normalize" type="checkbox" value="">
-                <label><i class="mdi mdi-check"></i>Normalize</label>
+                <input id="{{ item }}" name="{{ item }}" type="checkbox" value="">
+                <label><i class="mdi mdi-check"></i>{{item.replace('_', ' ')}}</label>
               </div>
-              <div class="pretty smooth">
-                <input id="smooth" name="smooth" type="checkbox" value="">
-                <label><i class="mdi mdi-check"></i>Smooth</label>
-              </div>
+              {% endfor %}
             </div>
           </div>
         </form>
