@@ -20,7 +20,6 @@
     crossorigin="anonymous"></script>
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
-
 </head>
 
 <body>
@@ -35,10 +34,6 @@
         <div class="jumbotron">
           <form id="main-form">
             <div id="root"></div>
-            <div class="form-group">
-              <label for="stock-ticker">Stock Ticker <small>multiple stocks separated by commas</small></label>
-              <input name="stock-ticker" type="text" id="stock-ticker" class="form-control" placeholder="enter stock ticker">
-            </div>
             {% for item in check_items %}
             <div class="form-check">
               <label class="form-check-label">
@@ -99,41 +94,12 @@
   <div id="for-script"></div>
   <script type=text/javascript>
     $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+    $TICK_NAMES = {{ tick_names|safe }};
       //autocomplete from jquery ui automation
       $(document).ready(function() {
-        var availableTags = {{ tick_names|safe }}
-        var options = {
-          minLength: 0,
-          source: function(request, response){
-            response( $.ui.autocomplete.filter(
-              availableTags, extractLast(request.term)));
-          },
-          focus: function(){return false;},
-          select:function(event,ui){
-            var terms = split(this.value);
-            terms.pop();
-            terms.push(ui.item.value);
-            terms.push("");
-            this.value = terms.join(", ");
-            return false;
-          }
-        };
-        function split(val){
-          return val.split(/,\s*/);
-        }
-        function extractLast(term){
-          return split(term).pop();
-        }
-        $("#stock-ticker").on("keydown", function(event){
-          if(event.keyCode === $.ui.keyCode.TAB && 
-          $(this).autocomplete("instance").menu.active){
-            event.preventDefault();
-          }
-        })
-        .autocomplete(options)
-
         $("#main-submit").on('click', function(e){
             e.preventDefault();
+            console.log($("#main-form").serialize());
             $.getJSON($SCRIPT_ROOT + "/_stock_data", $("#main-form").serialize(), function(data){
               $("#plot").html(data['plot_div']);
               $("#for-script").html(data['script']);

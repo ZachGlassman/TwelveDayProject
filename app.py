@@ -119,12 +119,17 @@ def _plot_two(df, rel_vars, tick):
     return jsonify(script=script, plot_div=div)
 
 
+def parse_ticker(request):
+    """parse the return ticker stock-tick-num"""
+    return request.args['ticker-select']
+
+
 @app.route('/_stock_data', methods=['GET'])
 def stock_input():
-    tick = request.args['stock-ticker']
+    tick = parse_ticker(request)
     if tick == '':
         return jsonify({})
-    qr = QuandleRequest(request.args['stock-ticker'])
+    qr = QuandleRequest(tick)
     df = qr.get()
     num_ticks = len(df['ticker'].unique())
     rel_vars = [i for i in request.args.keys() if i in list(df.columns)]
