@@ -45,15 +45,20 @@ class Transform(object):
     def _normalize(self, y):
         min_ = min(y)
         max_ = max(y)
+        print(min_, max_)
         return (y - min_) / (max_ - min_)
 
-    def __call__(self, df, normalize=False):
-        x, y = self._apply(df)
+    def __call__(self, df, normalize, smooth):
+        if smooth:
+            df_ = df.set_index('date').rolling(
+                25, win_type='blackman', center=True).mean().reset_index().dropna()
+        else:
+            df_ = df.dropna()
+        x, y = self._apply(df_)
         if normalize:
             # normalize the function to (y-min)/(max-min)
             y = self._normalize(y)
-
-        assert len(x) == len(y)
+        assert len(x) == len(y), 'not same length'
         return x, y
 
 
@@ -82,6 +87,7 @@ class DifferenceTransform(Transform):
 
 
 if __name__ == '__main__':
+
     a = AccessTransform('testing', 'id', 'x', ['y'])
     b = DifferenceTransform('test', 'id', 'x', ['y', 'z'])
     df = pd.DataFrame({'x': [1, 2, 3, 4, 5], 'y': [
