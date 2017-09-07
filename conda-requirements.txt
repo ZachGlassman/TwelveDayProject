@@ -5,3 +5,5 @@ flask
 jinja2
 pip
 simplejson
+numpy
+scipy
