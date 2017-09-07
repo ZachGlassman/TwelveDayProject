@@ -35,6 +35,8 @@ CHECK_ITEMS = [AccessTransform("Closing price", "close", "date", "close"),
                ]
 CHECK_ITEMS_DICT = {i.id: i for i in CHECK_ITEMS}
 
+MOD_NAMES = ['normalize', 'smooth', 'percent_change']
+
 # TODO
 # add metadata call and then only fetch relevent data
 
@@ -78,7 +80,7 @@ class QuandleRequest(object):
         return self._response_to_df()
 
 
-def _plot_one(df, rel_vars, tick, *args):
+def _plot_one(df, rel_vars, tick, **kwargs):
     p = figure(x_axis_type='datetime',
                tools=PLOT_OPTIONS['tools'])
     if len(rel_vars) > 2:
@@ -86,7 +88,7 @@ def _plot_one(df, rel_vars, tick, *args):
     else:
         colors = ['red', 'blue']
     for i, var in enumerate(rel_vars):
-        x, y = CHECK_ITEMS_DICT[var](df, *args)
+        x, y = CHECK_ITEMS_DICT[var](df, **kwargs)
         p.line(x, y,
                line_width=2,
                line_color=colors[i],
@@ -96,7 +98,7 @@ def _plot_one(df, rel_vars, tick, *args):
     return jsonify(script=script, plot_div=div)
 
 
-def _plot_two(df, rel_vars, tick, *args):
+def _plot_two(df, rel_vars, tick, **kwargs):
     """create a figure for each relevent variable"""
     figures = []
     ticks = list(sorted(df['ticker'].unique()))
@@ -115,7 +117,7 @@ def _plot_two(df, rel_vars, tick, *args):
         # now loop through each tick
         for j, tick in enumerate(ticks):
             _df = df[df['ticker'] == tick]
-            x, y = CHECK_ITEMS_DICT[var](_df, *args)
+            x, y = CHECK_ITEMS_DICT[var](_df, **kwargs)
             p.line(x, y,
                    line_width=2,
                    line_color=colors[j],
@@ -152,17 +154,11 @@ def get_query_keys_vars(keys):
 @app.route('/_stock_data', methods=['GET'])
 def stock_input():
     tick, start_date, end_date = parse_ticker(request)
-    normalize = request.args.get('normalize', None)
-    if normalize is not None:
-        normalize = True
-    else:
-        normalize = False
+    mods = {i: False for i in MOD_NAMES}
+    for key in mods.keys():
+        if request.args.get(key, None) is not None:
+            mods[key] = True
 
-    smooth = request.args.get('smooth', None)
-    if smooth is not None:
-        smooth = True
-    else:
-        smooth = False
     if tick == '':
         return jsonify({})
     qr = QuandleRequest(tick)
@@ -175,9 +171,9 @@ def stock_input():
     rel_vars = [i for i in request.args.keys() if i in CHECK_ITEMS_DICT.keys()]
     tick = qr.get_tick()
     if num_ticks == 1:
-        return _plot_one(df, rel_vars, tick, normalize, smooth)
+        return _plot_one(df, rel_vars, tick, **mods)
     elif num_ticks > 1:
-        return _plot_two(df, rel_vars, tick, normalize, smooth)
+        return _plot_two(df, rel_vars, tick, **mods)
     else:
         return jsonify({})
 
@@ -198,7 +194,8 @@ def index():
     return render_template('index.html',
                            check_items=CHECK_ITEMS,
                            year_list=year_list,
-                           tick_names=tick_names)
+                           tick_names=tick_names,
+                           mod_names=MOD_NAMES)
 
 
 if __name__ == '__main__':

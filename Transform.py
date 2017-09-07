@@ -45,15 +45,27 @@ class Transform(object):
     def _normalize(self, y):
         min_ = min(y)
         max_ = max(y)
-        print(min_, max_)
         return (y - min_) / (max_ - min_)
 
-    def __call__(self, df, normalize, smooth):
+    def _smooth(self, df):
+        return df.set_index(self._x).rolling(
+            25, win_type='blackman', center=True).mean().reset_index().dropna()
+
+    def _percent_change(self, df):
+        """compute numeric percent change, not that can only apply to
+        numeric columns, so we will just loop through relevant variables
+        """
+        df_ = df.set_index(self._x)
+        for col in self.variables:
+            df_[col] = df_[col].pct_change()
+        return df_.reset_index().dropna()
+
+    def __call__(self, df, normalize, smooth, percent_change):
+        df_ = df.dropna()
         if smooth:
-            df_ = df.set_index('date').rolling(
-                25, win_type='blackman', center=True).mean().reset_index().dropna()
-        else:
-            df_ = df.dropna()
+            df_ = self._smooth(df_)
+        if percent_change:
+            df_ = self._percent_change(df_)
         x, y = self._apply(df_)
         if normalize:
             # normalize the function to (y-min)/(max-min)
