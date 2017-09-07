@@ -31,4 +31,6 @@ class GetOptions extends React.Component {
 }
 
 ReactDOM.render(
-    <GetOptions/>, document.getElementById('root'));
+    <div>
+    <label>Select Stocks</label>
+    <GetOptions/></div>, document.getElementById('root'));
