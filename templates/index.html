@@ -20,6 +20,9 @@
     crossorigin="anonymous"></script>
   <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
   <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+  <link href="{{ url_for('static', filename='css/materialdesignicons.min.css') }}" media="all" rel="stylesheet" type="text/css" />
+  
+  
 </head>
 
 <body>
@@ -35,11 +38,11 @@
           <form id="main-form">
             <div id="root"></div>
             {% for item in check_items %}
-            <div class="form-check">
-              <label class="form-check-label">
-                  <input id="{{ item.id }}" name="{{ item.id }}" class="form-check-input" type="checkbox" value="">
-                 {{ item.name }}
-                </label>
+            <div class="pretty success circle smooth">
+              <input id="{{ item.id }}" name="{{ item.id }}" type="checkbox" value="">
+              <label> <i class="mdi mdi-check"></i>
+                  {{ item.name }}
+              </label>
             </div>
             {% endfor %}
             <!-- date selector -->

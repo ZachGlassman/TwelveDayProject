@@ -5,6 +5,7 @@ import VirtualizedSelect from 'react-virtualized-select';
 import 'react-select/dist/react-select.css';
 import 'react-virtualized/styles.css';
 import 'react-virtualized-select/styles.css';
+import 'pretty-checkbox/src/pretty.css';
 
 const options = $TICK_NAMES.map((name) => {
     return {value: name, label: name}

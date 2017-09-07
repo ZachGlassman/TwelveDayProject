@@ -67,7 +67,24 @@ class AccessTransform(Transform):
         return df[self._x].values, df[self._rel_vars[0]].values
 
 
+class DifferenceTransform(Transform):
+    """transform where two fields are subtracted
+    rel_vars is list of len 2 where second is subtracted
+    from first
+    """
+
+    def _validate(self):
+        return len(self._rel_vars) == 2
+
+    def _apply(self, df):
+        ans = df[self._rel_vars[0]] - df[self._rel_vars[1]]
+        return df[self._x].values, ans.values
+
+
 if __name__ == '__main__':
     a = AccessTransform('testing', 'id', 'x', ['y'])
-    df = pd.DataFrame({'x': [1, 2, 3, 4, 5], 'y': [5, 4, 2, 1, 5]})
+    b = DifferenceTransform('test', 'id', 'x', ['y', 'z'])
+    df = pd.DataFrame({'x': [1, 2, 3, 4, 5], 'y': [
+                      5, 4, 2, 1, 5], 'z': [3, 2, 5, 6, 7]})
     print(a(df))
+    print(b(df))
