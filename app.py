@@ -28,7 +28,7 @@ CHECK_ITEMS = [AccessTransform("Closing price", "close", "date", "close"),
                AccessTransform("Adjusted closing price",
                                "adj_close", "date", "adj_close"),
                AccessTransform("Opening price", "open", "date", "open"),
-               AccessTransform("Ajusted opening price",
+               AccessTransform("Adjusted opening price",
                                "adj_open", "date", "adj_open"),
                DifferenceTransform("Price Change", 'p_diff',
                                    'date', ['open', 'close'])
