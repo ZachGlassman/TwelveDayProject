@@ -175,6 +175,9 @@ def stock_input():
     df = qr.get()
     num_ticks = len(df['ticker'].unique())
     rel_vars = [i for i in request.args.keys() if i in CHECK_ITEMS_DICT.keys()]
+    if len(rel_vars) == 0:
+        return jsonify({'plot_div': '<p>Please select some things to plot</p>'})
+
     tick = qr.get_tick()
     if num_ticks == 1:
         return _plot_one(df, rel_vars, tick, **mods)
