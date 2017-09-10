@@ -49,24 +49,29 @@ class QuandleRequest(object):
         self._params['api_key'] = str(API_KEY)
 
     def get_tick(self):
+        """get the ticker parameter"""
         return self._params['ticker']
 
     def ticker(self, ticker):
+        """set the ticker and strip extra whitespace"""
         self._params['ticker'] = ticker.replace(' ', '')
 
     def start_date(self, date):
+        """set the start date"""
         self._params['date.gte'] = date
 
     def end_date(self, date):
+        """set the end date"""
         self._params['date.lte'] = date
 
     def _request(self):
         r = requests.get('https://www.quandl.com/api/v3/datatables/WIKI/PRICES.json',
                          params=self._params)
-        # handle errors
+        # TODO handle errors
         self._response = r.json()
 
     def _response_to_df(self):
+        """turn the quandle response to a dataframe"""
         j = self._response['datatable']
         _d = {col['name']: [k[i] for k in j['data']]
               for i, col in enumerate(j['columns'])}
@@ -76,6 +81,7 @@ class QuandleRequest(object):
         return df
 
     def get(self):
+        """run the request and return dataframe"""
         self._request()
         return self._response_to_df()
 
